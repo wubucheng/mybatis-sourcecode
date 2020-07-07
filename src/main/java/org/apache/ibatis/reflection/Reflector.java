@@ -230,10 +230,12 @@ public class Reflector {
         // modification of final fields through reflection (JSR-133). (JGB)
         // pr #16 - final static can only be set by the classloader
         int modifiers = field.getModifiers();
+        // 过滤掉static和final修饰的字段
         if (!(Modifier.isFinal(modifiers) && Modifier.isStatic(modifiers))) {
           addSetField(field);
         }
       }
+      // getMethods集合不包含该字段，则记录到getMethods和getTypes
       if (!getMethods.containsKey(field.getName())) {
         addGetField(field);
       }

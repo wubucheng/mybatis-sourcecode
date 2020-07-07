@@ -38,10 +38,13 @@ public class TypeParameterResolver {
    * @param srcType
    *          the src type
    * @return The field type as {@link Type}. If it has type parameters in the declaration,<br>
-   *         they will be resolved to the actual runtime {@link Type}s.
+   *         they will be resolved to the actual runtime {@link Type}s.、
+   * 解析字段类型
    */
   public static Type resolveFieldType(Field field, Type srcType) {
+    // 获取字段声明类型
     Type fieldType = field.getGenericType();
+    // 获取字段定义所在的Class对象
     Class<?> declaringClass = field.getDeclaringClass();
     return resolveType(fieldType, srcType, declaringClass);
   }
@@ -55,6 +58,7 @@ public class TypeParameterResolver {
    *          the src type
    * @return The return type of the method as {@link Type}. If it has type parameters in the declaration,<br>
    *         they will be resolved to the actual runtime {@link Type}s.
+   *  解析返回值类型
    */
   public static Type resolveReturnType(Method method, Type srcType) {
     Type returnType = method.getGenericReturnType();
@@ -72,6 +76,7 @@ public class TypeParameterResolver {
    * @return The parameter types of the method as an array of {@link Type}s. If they have type parameters in the
    *         declaration,<br>
    *         they will be resolved to the actual runtime {@link Type}s.
+   *  解析参数列表类型
    */
   public static Type[] resolveParamTypes(Method method, Type srcType) {
     Type[] paramTypes = method.getGenericParameterTypes();
@@ -84,6 +89,7 @@ public class TypeParameterResolver {
   }
 
   private static Type resolveType(Type type, Type srcType, Class<?> declaringClass) {
+    // 针对不同类型，调用不同方法进行解析
     if (type instanceof TypeVariable) {
       return resolveTypeVar((TypeVariable<?>) type, srcType, declaringClass);
     } else if (type instanceof ParameterizedType) {
@@ -120,6 +126,7 @@ public class TypeParameterResolver {
       if (typeArgs[i] instanceof TypeVariable) {
         args[i] = resolveTypeVar((TypeVariable<?>) typeArgs[i], srcType, declaringClass);
       } else if (typeArgs[i] instanceof ParameterizedType) {
+        // 递归调用
         args[i] = resolveParameterizedType((ParameterizedType) typeArgs[i], srcType, declaringClass);
       } else if (typeArgs[i] instanceof WildcardType) {
         args[i] = resolveWildcardType((WildcardType) typeArgs[i], srcType, declaringClass);
@@ -165,14 +172,16 @@ public class TypeParameterResolver {
     }
 
     if (clazz == declaringClass) {
+      // 获取上界
       Type[] bounds = typeVar.getBounds();
       if (bounds.length > 0) {
         return bounds[0];
       }
       return Object.class;
     }
-
+    // 获取声明的父类类型
     Type superclass = clazz.getGenericSuperclass();
+    // 扫描父类后继续解析
     result = scanSuperTypes(typeVar, srcType, declaringClass, clazz, superclass);
     if (result != null) {
       return result;
@@ -204,6 +213,7 @@ public class TypeParameterResolver {
         }
       }
       if (declaringClass.isAssignableFrom(parentAsClass)) {
+        // 继续解析父类
         return resolveTypeVar(typeVar, parentAsType, declaringClass);
       }
     } else if (superclass instanceof Class && declaringClass.isAssignableFrom((Class<?>) superclass)) {
