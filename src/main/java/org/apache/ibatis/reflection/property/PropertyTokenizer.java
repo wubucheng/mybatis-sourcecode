@@ -21,24 +21,36 @@ import java.util.Iterator;
  * @author Clinton Begin
  */
 public class PropertyTokenizer implements Iterator<PropertyTokenizer> {
+  // 表达式名称
   private String name;
+  // 表达式索引名称
   private final String indexedName;
+  // 索引下标
   private String index;
+  // 子表达式
   private final String children;
 
+  /*
+ 例子：解析表达式： students[0].items[0].name
+  */
   public PropertyTokenizer(String fullname) {
     int delim = fullname.indexOf('.');
     if (delim > -1) {
+      // 初始化name，即得到students[0]
       name = fullname.substring(0, delim);
+      // 获取子表达式，即得到items[0].name
       children = fullname.substring(delim + 1);
     } else {
       name = fullname;
       children = null;
     }
     indexedName = name;
+    // 解析students[0]
     delim = name.indexOf('[');
     if (delim > -1) {
+      // 得到下标：0
       index = name.substring(delim + 1, name.length() - 1);
+      // 得到解析后name
       name = name.substring(0, delim);
     }
   }

@@ -28,6 +28,7 @@ public interface ObjectFactory {
   /**
    * Sets configuration properties.
    * @param properties configuration properties
+   * 设置配置信息
    */
   default void setProperties(Properties properties) {
     // NOP
@@ -41,6 +42,7 @@ public interface ObjectFactory {
    * @param type
    *          Object type
    * @return the t
+   * 通过无参构造器创建指定Class的对象
    */
   <T> T create(Class<T> type);
 
@@ -56,6 +58,7 @@ public interface ObjectFactory {
    * @param constructorArgs
    *          Constructor argument values
    * @return the t
+   * 根据参数列表创建指定Class的对象
    */
   <T> T create(Class<T> type, List<Class<?>> constructorArgTypes, List<Object> constructorArgs);
 
@@ -69,6 +72,7 @@ public interface ObjectFactory {
    *          Object type
    * @return whether it is a collection or not
    * @since 3.1.0
+   * 判断类型是否为集合
    */
   <T> boolean isCollection(Class<T> type);
 
